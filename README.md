@@ -23,6 +23,6 @@ Pinned plugin reference: `df34daebaf3ea28e1da764f5257a8084c1944b21`. Pinned back
 
 ## Build experiment
 
-Run the manual **Android backend compile experiment** workflow. Rust 1.90.0 and NDK 27.2.12479018 are fixed. Dependencies are vendored and checked before compiling in a no-network, clean-environment Linux sandbox. The GitHub-hosted runner is a **cross-compilation host**, not an Android runtime. No PAT or repository secret is supplied to build scripts.
+Run the manual **Android backend compile experiment** workflow. Rust 1.90.0 and NDK 27.3.13750724 are fixed. The exact preinstalled NDK is checked from source.properties; sdkmanager is not assumed to be on PATH. Dependencies are vendored and checked before compiling in a no-network, clean-environment Linux sandbox. The GitHub-hosted runner is a **cross-compilation host**, not an Android runtime. No PAT or repository secret is supplied to build scripts.
 
 Artifacts retain build logs, version-only diff, lock/provenance records, execution traces, ELF metadata, hashes and (only if produced) the Android binary. Failure artifacts remain available. Consult the actual run conclusion; workflow presence alone is not success. Artifacts retain the backend MIT license; dependency notice completeness still needs a redistribution review.

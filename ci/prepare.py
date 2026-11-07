@@ -14,6 +14,6 @@ assert [x for x in old['package']if x['name']!='grok-search-rs']==[x for x in ne
 mold=tomllib.loads(before['Cargo.toml']);mnew=tomllib.loads(manifest);mold['package']['version']='0.1.26';assert mold==mnew
 for name,text in [('Cargo.toml',manifest),('Cargo.lock',lock)]: (p/name).write_text(text)
 (out/'version-only.patch').write_text(''.join(''.join(difflib.unified_diff(before[n].splitlines(True),(p/n).read_text().splitlines(True),fromfile='upstream/'+n,tofile='experiment/'+n))for n in before))
-provenance={'upstream_commit':commit,'tag':'v0.1.26','source_version_before':'0.1.25','version_injected':'0.1.26','rust':'1.90.0','ndk':'27.2.12479018','native_api':26,'target':'aarch64-linux-android','features':'default (no http feature)','original_lock_sha256':hashlib.sha256(before['Cargo.lock'].encode()).hexdigest(),'experiment_lock_sha256':hashlib.sha256(lock.encode()).hexdigest(),'acceptance':'cross-compile only; no Android execution or plugin integration'}
+provenance={'upstream_commit':commit,'tag':'v0.1.26','source_version_before':'0.1.25','version_injected':'0.1.26','rust':'1.90.0','ndk':'27.3.13750724','native_api':26,'target':'aarch64-linux-android','features':'default (no http feature)','original_lock_sha256':hashlib.sha256(before['Cargo.lock'].encode()).hexdigest(),'experiment_lock_sha256':hashlib.sha256(lock.encode()).hexdigest(),'acceptance':'cross-compile only; no Android execution or plugin integration'}
 (out/'provenance.json').write_text(json.dumps(provenance,indent=2)+'\n')
 print(json.dumps(provenance))

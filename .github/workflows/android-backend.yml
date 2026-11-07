@@ -12,7 +12,7 @@ jobs:
     timeout-minutes: 35
     env:
       RUST_VERSION: '1.90.0'
-      NDK_VERSION: '27.2.12479018'
+      NDK_VERSION: '27.3.13750724'
     steps:
       - name: Checkout experiment
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
@@ -35,11 +35,14 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends bubblewrap strace
           rustup toolchain install "$RUST_VERSION" --profile minimal --target aarch64-linux-android
-          sdkmanager --sdk_root="$ANDROID_HOME" "ndk;$NDK_VERSION"
-          test -d "$ANDROID_HOME/ndk/$NDK_VERSION"
+          SDK_ROOT="${ANDROID_HOME:-${ANDROID_SDK_ROOT:-/usr/local/lib/android/sdk}}"
+          NDK_ROOT="$SDK_ROOT/ndk/$NDK_VERSION"
+          test -f "$NDK_ROOT/source.properties"
+          python3 -c 'import pathlib,sys; props=dict(line.split("=",1) for line in pathlib.Path(sys.argv[1]).read_text().splitlines() if "=" in line); assert {k.strip():v.strip() for k,v in props.items()}["Pkg.Revision"]==sys.argv[2]' "$NDK_ROOT/source.properties" "$NDK_VERSION"
+          printf 'NDK_ROOT=%s\n' "$NDK_ROOT" >> "$GITHUB_ENV"
           rustup run "$RUST_VERSION" rustc --version | tee evidence/rust-version.txt
-          cat "$ANDROID_HOME/ndk/$NDK_VERSION/source.properties" > evidence/ndk-version.txt
-          COMPILER="$ANDROID_HOME/ndk/$NDK_VERSION/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android26-clang"
+          cat "$NDK_ROOT/source.properties" > evidence/ndk-version.txt
+          COMPILER="$NDK_ROOT/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android26-clang"
           file "$COMPILER" > evidence/ndk-compiler-kind.txt
           if head -c 2 "$COMPILER" | grep -q '#!'; then
             cat "$COMPILER" > evidence/ndk-compiler-wrapper.txt
@@ -67,13 +70,13 @@ jobs:
           mkdir -p "$RUNNER_TEMP/android-output"
           RUSTC_PATH=$(rustup which --toolchain "$RUST_VERSION" rustc)
           TOOLCHAIN=$(dirname "$(dirname "$RUSTC_PATH")")
-          bash ci/sandbox-build.sh upstream "$RUNNER_TEMP/vendor" "$RUNNER_TEMP/android-output" "$TOOLCHAIN" "$ANDROID_HOME/ndk/$NDK_VERSION" "$RUNNER_TEMP/protected-traces" 2>&1 | tee evidence/build.log
+          bash ci/sandbox-build.sh upstream "$RUNNER_TEMP/vendor" "$RUNNER_TEMP/android-output" "$TOOLCHAIN" "$NDK_ROOT" "$RUNNER_TEMP/protected-traces" 2>&1 | tee evidence/build.log
       - name: Audit externally observed execution even on compile failure
         if: always() && steps.compile.outcome != 'skipped'
         run: sudo python3 ci/check_trace.py "$RUNNER_TEMP/protected-traces" evidence/sandbox-check.json
       - name: Verify Android ELF after successful compile and audit
         if: success()
-        run: python3 ci/check_result.py "$RUNNER_TEMP/android-output" evidence "$ANDROID_HOME/ndk/$NDK_VERSION"
+        run: python3 ci/check_result.py "$RUNNER_TEMP/android-output" evidence "$NDK_ROOT"
       - name: Retain failure or success evidence
         if: always()
         shell: bash
