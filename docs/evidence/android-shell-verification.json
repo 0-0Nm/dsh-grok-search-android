@@ -1,0 +1,37 @@
+{
+  "collectedAtUTC": "2026-11-07T06:13:11.816922+00:00",
+  "backendCompilation": "passed",
+  "backendAndroidShellLaunch": "passed",
+  "mcpInitialize": "passed",
+  "mcpToolsDiscovery": "passed",
+  "protocolVersion": "2025-06-18",
+  "serverInfo": {
+    "name": "grok-search-rs",
+    "version": "0.1.26"
+  },
+  "tools": [
+    "web_search",
+    "get_sources",
+    "web_fetch",
+    "web_map",
+    "doctor"
+  ],
+  "realSearchToolsCalled": false,
+  "requestMethods": [
+    "initialize",
+    "notifications/initialized",
+    "tools/list"
+  ],
+  "testProcessReaped": true,
+  "transport": "stdio over Android mksh anonymous pipes",
+  "executionContext": "Android16 API36 arm64-v8a; Shizuku shell UID2000; not ordinary APK sandbox",
+  "binarySha256": "8e5696d97f8eef4aded6f48fa2be52543cba417570566044bbd0087ec6dac838",
+  "elfInterpreter": "/system/bin/linker64",
+  "deviceEvidence": "/storage/emulated/0/Download/dsh-android-audit-cdPUAz3v/backend-run5/device-smoke-FCpsAha9",
+  "originalPluginAndroidOrchestration": "not_run",
+  "mockFallbackTimeoutCancellation": "not_run",
+  "realSearch": "not_run",
+  "targetClientIntegration": "not_run",
+  "ordinaryAPKDistribution": "not_run",
+  "knownFailure": "Named FIFO creation denied before backend launch; preserved evidence and used anonymous pipes without changing permissions/SELinux"
+}
