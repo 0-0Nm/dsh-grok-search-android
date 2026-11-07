@@ -1,0 +1,95 @@
+name: Android backend compile experiment
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: android-backend-compile
+  cancel-in-progress: false
+jobs:
+  compile:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    env:
+      RUST_VERSION: '1.90.0'
+      NDK_VERSION: '27.2.12479018'
+    steps:
+      - name: Checkout experiment
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - name: Create evidence directory
+        run: mkdir -p evidence
+      - name: Checkout original backend
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          repository: Episkey-G/GrokSearch-rs
+          ref: be5fe87db22939de9405a7e9c70b1e43f7151214
+          path: upstream
+          persist-credentials: false
+          fetch-depth: 1
+      - name: Prepare fixed build toolchain (runner only)
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends bubblewrap strace
+          rustup toolchain install "$RUST_VERSION" --profile minimal --target aarch64-linux-android
+          sdkmanager --sdk_root="$ANDROID_HOME" "ndk;$NDK_VERSION"
+          test -d "$ANDROID_HOME/ndk/$NDK_VERSION"
+          rustup run "$RUST_VERSION" rustc --version | tee evidence/rust-version.txt
+          cat "$ANDROID_HOME/ndk/$NDK_VERSION/source.properties" > evidence/ndk-version.txt
+          COMPILER="$ANDROID_HOME/ndk/$NDK_VERSION/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android26-clang"
+          file "$COMPILER" > evidence/ndk-compiler-kind.txt
+          if head -c 2 "$COMPILER" | grep -q '#!'; then
+            cat "$COMPILER" > evidence/ndk-compiler-wrapper.txt
+          fi
+          bwrap --version > evidence/bubblewrap-version.txt
+      - name: Verify source and apply upstream version-only release transformation
+        run: python3 ci/prepare.py upstream evidence
+      - name: Vendor locked dependencies without executing them
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p upstream/.cargo
+          cd upstream
+          cargo +"$RUST_VERSION" vendor --locked --versioned-dirs "$RUNNER_TEMP/vendor" > ../evidence/vendor-generated-config.toml
+          printf '[source.crates-io]\nreplace-with = "vendored-sources"\n[source.vendored-sources]\ndirectory = "/vendor"\n' > .cargo/config.toml
+          cd ..
+          python3 ci/check_vendor.py "$RUNNER_TEMP/vendor" audit/dependencies.json evidence
+          cp upstream/LICENSE evidence/LICENSE.backend-MIT
+          cp upstream/Cargo.lock evidence/Cargo.lock.experiment
+      - name: Cross-compile offline in clean no-network sandbox
+        id: compile
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/android-output"
+          RUSTC_PATH=$(rustup which --toolchain "$RUST_VERSION" rustc)
+          TOOLCHAIN=$(dirname "$(dirname "$RUSTC_PATH")")
+          bash ci/sandbox-build.sh upstream "$RUNNER_TEMP/vendor" "$RUNNER_TEMP/android-output" "$TOOLCHAIN" "$ANDROID_HOME/ndk/$NDK_VERSION" "$RUNNER_TEMP/protected-traces" 2>&1 | tee evidence/build.log
+      - name: Audit externally observed execution even on compile failure
+        if: always() && steps.compile.outcome != 'skipped'
+        run: sudo python3 ci/check_trace.py "$RUNNER_TEMP/protected-traces" evidence/sandbox-check.json
+      - name: Verify Android ELF after successful compile and audit
+        if: success()
+        run: python3 ci/check_result.py "$RUNNER_TEMP/android-output" evidence "$ANDROID_HOME/ndk/$NDK_VERSION"
+      - name: Retain failure or success evidence
+        if: always()
+        shell: bash
+        run: |
+          mkdir -p evidence/traces
+          if sudo test -d "$RUNNER_TEMP/protected-traces"; then
+            sudo find "$RUNNER_TEMP/protected-traces" -maxdepth 1 -name 'exec.trace.*' -type f -exec cp -t evidence/traces {} +
+            sudo chown -R "$(id -u):$(id -g)" evidence/traces
+            sudo chmod -R u+rwX,go+rX evidence/traces
+          fi
+          git rev-parse HEAD > evidence/experiment-commit.txt
+      - name: Upload experiment evidence (not an APK)
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: android-backend-arm64-evidence
+          path: evidence/
+          retention-days: 7
+          if-no-files-found: error
