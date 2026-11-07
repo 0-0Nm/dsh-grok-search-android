@@ -18,7 +18,7 @@ sudo /usr/bin/strace -ff -s 4096 -e trace=execve,execveat,connect -o "$TRACE_DIR
  --ro-bind /usr /usr --symlink usr/bin /bin --symlink usr/sbin /sbin \
  --symlink usr/lib /lib --symlink usr/lib64 /lib64 \
  --dir /etc --ro-bind /etc/ld.so.cache /etc/ld.so.cache --ro-bind /etc/alternatives /etc/alternatives \
- --proc /proc --dev /dev --tmpfs /tmp \
+ --proc /proc --dev /dev --tmpfs /tmp --chmod 1777 /tmp \
  --ro-bind "$SOURCE" /source --ro-bind "$VENDOR" /vendor \
  --ro-bind "$TOOLCHAIN" /toolchain --ro-bind "$NDK" /ndk --bind "$OUTPUT" /build \
  --ro-bind "$(dirname "$(realpath "$0")")/sandbox-entry.py" /entry.py \
