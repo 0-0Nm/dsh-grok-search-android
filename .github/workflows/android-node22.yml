@@ -1,0 +1,96 @@
+name: Android Node22 original-core experiment
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: android-node22-experiment
+  cancel-in-progress: false
+jobs:
+  package-core:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: Lain-in-coding/dsh-grok-search
+          ref: df34daebaf3ea28e1da764f5257a8084c1944b21
+          path: plugin
+          persist-credentials: false
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /src/core/
+            /src/provider.mjs
+            /package.json
+            /package-lock.json
+            /LICENSE
+            /test/provider-core.test.mjs
+            /test/provider-mcp.test.mjs
+            /test/routed-search.test.mjs
+            /test/source-adapters.test.mjs
+            /test/source-chain.test.mjs
+            /fixtures/mcp/
+      - name: Package original code with locked JS dependencies (no lifecycle scripts)
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p core-evidence
+          node --version > core-evidence/host-node-version.txt
+          LOCK_BEFORE=$(sha256sum plugin/package-lock.json)
+          touch "$RUNNER_TEMP/empty-npmrc"
+          (cd plugin && npm ci --ignore-scripts --legacy-peer-deps --omit=dev --no-audit --no-fund --userconfig "$RUNNER_TEMP/empty-npmrc" --registry https://registry.npmjs.org) 2>&1 | tee core-evidence/npm-ci.log
+          test "$LOCK_BEFORE" = "$(sha256sum plugin/package-lock.json)"
+          python3 ci/package-original-core.py plugin core-evidence experiments/probe-original.mjs
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: original-plugin-core-experiment
+          path: core-evidence/
+          retention-days: 7
+          if-no-files-found: error
+  build-runtime:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 75
+    env:
+      NDK_VERSION: '27.3.13750724'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Prepare isolated runtime build inputs (runner only)
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p node22-evidence
+          git rev-parse HEAD > node22-evidence/experiment-commit.txt
+          df -h . > node22-evidence/disk.txt
+          test "$(df -Pk . | awk 'NR==2 {print $4}')" -ge 10485760
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends bubblewrap
+          for tool in gcc g++ make python3; do command -v "$tool"; done
+          NDK_ROOT="${ANDROID_HOME:-${ANDROID_SDK_ROOT:-/usr/local/lib/android/sdk}}/ndk/$NDK_VERSION"
+          python3 -c 'import pathlib,sys; p=dict(x.split("=",1) for x in pathlib.Path(sys.argv[1]).read_text().splitlines() if "=" in x); assert {k.strip():v.strip() for k,v in p.items()}["Pkg.Revision"]==sys.argv[2]' "$NDK_ROOT/source.properties" "$NDK_VERSION"
+          printf 'NDK_ROOT=%s\n' "$NDK_ROOT" >> "$GITHUB_ENV"
+          cp "$NDK_ROOT/source.properties" node22-evidence/ndk-version.txt
+          JOBS=$(python3 -c 'import os; m=int(next(x.split()[1] for x in open("/proc/meminfo") if x.startswith("MemTotal:")))//1024; print(max(1,min(4,os.cpu_count()or 1,m//3000)))')
+          printf 'BUILD_JOBS=%s\n' "$JOBS" >> "$GITHUB_ENV"
+          curl -fLsS --connect-timeout 15 --max-time 180 --max-filesize 104857600 https://nodejs.org/dist/v22.21.1/node-v22.21.1.tar.xz -o "$RUNNER_TEMP/node-v22.21.1.tar.xz"
+          python3 ci/node22-prepare.py "$RUNNER_TEMP/node-v22.21.1.tar.xz" "$RUNNER_TEMP/node-original" "$RUNNER_TEMP/node-build" node22-evidence
+      - name: Compile Android runtime without network or credentials
+        shell: bash
+        run: |
+          set -euo pipefail
+          timeout -k 15s 65m bash ci/node22-sandbox.sh "$RUNNER_TEMP/node-build" "$NDK_ROOT" ci "$BUILD_JOBS" 2>&1 | tee node22-evidence/build.log
+      - name: Check original source, Android ELF and runtime dependencies
+        run: python3 ci/node22-collect.py "$RUNNER_TEMP/node-build" node22-evidence "$NDK_ROOT"
+      - name: Upload runtime or failure evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: node22-android-runtime-experiment
+          path: node22-evidence/
+          retention-days: 7
+          if-no-files-found: error
