@@ -33,6 +33,7 @@ jobs:
             /test/source-adapters.test.mjs
             /test/source-chain.test.mjs
             /fixtures/mcp/
+            /fixtures/internal-candidate/mcp-sources.mjs
       - name: Package original code with locked JS dependencies (no lifecycle scripts)
         shell: bash
         run: |

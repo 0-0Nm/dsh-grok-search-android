@@ -1,0 +1,30 @@
+{
+  "environment": "existing Alpine3.24 / Linux arm64 / musl / Node24.18.1",
+  "tests": 113,
+  "passed": 113,
+  "failed": 0,
+  "originalTestFilesModified": false,
+  "originalBusinessSourceModified": false,
+  "networkGuardFiles": 5,
+  "networkAttempts": 0,
+  "firstBaseline": {
+    "tests": 113,
+    "passed": 107,
+    "failed": 6,
+    "rootCause": "missing packaged original mcp-sources fixture"
+  },
+  "correction": {
+    "cause": "packaging omitted sourceFixture referenced by six original MCP tests",
+    "originalFixture": "fixtures/internal-candidate/mcp-sources.mjs",
+    "bytes": 3105,
+    "gitBlob": "18dadfd62aa4896595e865b9f69478f8d600e800",
+    "businessSourceChanged": false,
+    "newArchive": "/storage/emulated/0/Download/dsh-android-audit-cdPUAz3v/C4-runtime/original-core-experiment-fixtures-v2.tar.gz",
+    "newArchiveSha256": "b98c97f2f3ff0c056c5b8a89c14df647bf400392d8c875912621ec0bece760ab",
+    "verifiedManifestFiles": 1194,
+    "oldArchivePreserved": true
+  },
+  "AndroidAcceptance": false,
+  "nativeNode22Build": "independent; not verified by this baseline",
+  "evidence": "/storage/emulated/0/Download/dsh-android-audit-cdPUAz3v/C4-runtime/baseline-alpine-v2.XXoJiGam/test.log"
+}

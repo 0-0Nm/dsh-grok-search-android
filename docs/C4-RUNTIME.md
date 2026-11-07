@@ -19,3 +19,9 @@ The first phone probe will execute the original mcp-search.mjs::probeMcpHandshak
 Next, the selected original routed/provider/source tests may be run on Android with isolated configuration and synthetic fixtures, preserving the distinction between mock cases and real searches. No real API credentials or paid searches are part of this workflow.
 
 UI and Elanor references remain a later phase; this experiment does not select a UI stack or add product/account features.
+
+## Supplemental Linux/musl baseline
+
+The five selected upstream test files were executed unchanged under the existing Alpine 3.24 / Node 24.18.1 Linux arm64 runtime, with isolated HOME/TMP and real-network calls rejected. First result: 107/113; six failures shared a missing packaged fixture, fixtures/internal-candidate/mcp-sources.mjs. The fixture was restored byte-for-byte from the same pinned upstream commit (Git blob 18dadfd62aa4896595e865b9f69478f8d600e800), not rewritten. Second result: 113/113 passed, zero rejected network attempts.
+
+The packager now collects literal fixture references and the sparse checkout includes the missing original file. Old artifacts and failure logs remain preserved. This diagnostic baseline is **not** Android/bionic execution and is not C4/C5 Android acceptance. The first native Node22 build is separate at its original experiment commit; this packaging-only correction does not dispatch or restart it.
