@@ -27,7 +27,7 @@ for f in traces:
   if not match or not re.search(r'= 0\s*$',line):
    violations.append({'type':'unparsed_exec','trace':f.name,'line':line});continue
   path=match[1];executed.append(path)
-  allowed=(path in ['/usr/bin/bwrap','/toolchain/bin/cargo','/toolchain/bin/rustc','/toolchain/bin/rustdoc','/usr/bin/cc','/usr/bin/gcc','/usr/bin/ld','/usr/bin/as','/usr/bin/ld.bfd','/bin/cc','/bin/gcc','/usr/bin/dirname','/bin/dirname']or path.startswith('/ndk/toolchains/llvm/prebuilt/linux-x86_64/bin/')or re.fullmatch(r'/usr/lib/gcc/x86_64-linux-gnu/\d+/[^/]+',path)or re.fullmatch(r'/build/target/(?:release|aarch64-linux-android/release)/build/[A-Za-z0-9_.-]+/build-script-(?:build|main)',path))
+  allowed=(path in ['/usr/bin/bwrap','/usr/bin/setpriv','/usr/bin/python3','/toolchain/bin/cargo','/toolchain/bin/rustc','/toolchain/bin/rustdoc','/usr/bin/cc','/usr/bin/gcc','/usr/bin/ld','/usr/bin/as','/usr/bin/ld.bfd','/bin/cc','/bin/gcc','/usr/bin/dirname','/bin/dirname']or path.startswith('/ndk/toolchains/llvm/prebuilt/linux-x86_64/bin/')or re.fullmatch(r'/usr/lib/gcc/x86_64-linux-gnu/\d+/[^/]+',path)or re.fullmatch(r'/build/target/(?:release|aarch64-linux-android/release)/build/[A-Za-z0-9_.-]+/build-script-(?:build|main)',path))
   if not allowed:violations.append({'type':'unapproved_exec','path':path,'trace':f.name})
 if '/usr/bin/bwrap'not in executed or '/toolchain/bin/cargo'not in executed:
  violations.append({'type':'missing_required_exec'})

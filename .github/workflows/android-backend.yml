@@ -87,6 +87,9 @@ jobs:
             sudo chown -R "$(id -u):$(id -g)" evidence/traces
             sudo chmod -R u+rwX,go+rX evidence/traces
           fi
+          if test -f "$RUNNER_TEMP/android-output/sandbox-entry.json"; then
+            cp "$RUNNER_TEMP/android-output/sandbox-entry.json" evidence/sandbox-entry.json
+          fi
           git rev-parse HEAD > evidence/experiment-commit.txt
       - name: Upload experiment evidence (not an APK)
         if: always()
