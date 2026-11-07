@@ -9,3 +9,5 @@ ring/cc compile native assembly and C. Nondefault generation paths, including RI
 Not exhaustively audited: proc macros, all C/ASM/Rust code, prebuilt objects, and nondefault build branches. Passing this experiment is not a supply-chain safety guarantee, device execution test, or whole-plugin adaptation.
 
 Execution tracing uses an outer root observer; protected raw logs are never mounted inside the sandbox. A path allowlist does not prove code authenticity at writable build-output paths. execveat, incomplete required records, unknown successful executions and attempted Internet connections fail the experiment. On a failed compile, trace auditing still runs; ELF acceptance remains success-only.
+
+Observed toolchain compatibility correction: allow the exact Rust 1.90 host LLD paths and GCC13 collect2 path. Bash is permitted only with the fixed read-only NDK API26 compiler wrapper as its script argument; arbitrary bash -c remains rejected. The original 1,774 trace files replay with zero violations under this explicit correction. This is an execution-path check, not proof of code authenticity.

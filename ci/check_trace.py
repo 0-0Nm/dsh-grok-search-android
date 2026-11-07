@@ -27,7 +27,10 @@ for f in traces:
   if not match or not re.search(r'= 0\s*$',line):
    violations.append({'type':'unparsed_exec','trace':f.name,'line':line});continue
   path=match[1];executed.append(path)
-  allowed=(path in ['/usr/bin/bwrap','/usr/bin/setpriv','/usr/bin/python3','/toolchain/bin/cargo','/toolchain/bin/rustc','/toolchain/bin/rustdoc','/usr/bin/cc','/usr/bin/gcc','/usr/bin/ld','/usr/bin/as','/usr/bin/ld.bfd','/bin/cc','/bin/gcc','/usr/bin/dirname','/bin/dirname']or path.startswith('/ndk/toolchains/llvm/prebuilt/linux-x86_64/bin/')or re.fullmatch(r'/usr/lib/gcc/x86_64-linux-gnu/\d+/[^/]+',path)or re.fullmatch(r'/build/target/(?:release|aarch64-linux-android/release)/build/[A-Za-z0-9_.-]+/build-script-(?:build|main)',path))
+  allowed=(path in ['/toolchain/lib/rustlib/x86_64-unknown-linux-gnu/bin/gcc-ld/ld.lld','/toolchain/lib/rustlib/x86_64-unknown-linux-gnu/bin/rust-lld','/usr/libexec/gcc/x86_64-linux-gnu/13/collect2','/usr/bin/bwrap','/usr/bin/setpriv','/usr/bin/python3','/toolchain/bin/cargo','/toolchain/bin/rustc','/toolchain/bin/rustdoc','/usr/bin/cc','/usr/bin/gcc','/usr/bin/ld','/usr/bin/as','/usr/bin/ld.bfd','/bin/cc','/bin/gcc','/usr/bin/dirname','/bin/dirname']or path.startswith('/ndk/toolchains/llvm/prebuilt/linux-x86_64/bin/')or re.fullmatch(r'/usr/lib/gcc/x86_64-linux-gnu/\d+/[^/]+',path)or re.fullmatch(r'/build/target/(?:release|aarch64-linux-android/release)/build/[A-Za-z0-9_.-]+/build-script-(?:build|main)',path))
+  if path=='/usr/bin/bash':
+   # Only the audited, fixed read-only NDK compiler wrapper; never arbitrary bash -c.
+   allowed=re.search(r'execve\("/usr/bin/bash", \["bash", "/ndk/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android26-clang"(?:,|\])',line)is not None
   if not allowed:violations.append({'type':'unapproved_exec','path':path,'trace':f.name})
 if '/usr/bin/bwrap'not in executed or '/toolchain/bin/cargo'not in executed:
  violations.append({'type':'missing_required_exec'})
