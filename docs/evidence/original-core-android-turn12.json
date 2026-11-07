@@ -1,0 +1,207 @@
+{
+  "timeUTC": "2026-11-07T13:41:21.491944+00:00",
+  "device": "V2463A Android16 API36 arm64-v8a",
+  "execution": "Shizuku shell UID2000; Android/bionic Node24.22.2 from verified signed repository payload; no Termux App installed",
+  "originalPluginCommit": "df34daebaf3ea28e1da764f5257a8084c1944b21",
+  "backendCommit": "be5fe87db22939de9405a7e9c70b1e43f7151214",
+  "runtimeSmoke": "passed",
+  "originalPluginMCPProbe": "passed",
+  "originalSuite": {
+    "tests": 113,
+    "pass": 113,
+    "fail": 0,
+    "skip": 0,
+    "platform": "android",
+    "testFiles": [
+      "provider-core.test.mjs",
+      "provider-mcp.test.mjs",
+      "routed-search.test.mjs",
+      "source-adapters.test.mjs",
+      "source-chain.test.mjs"
+    ]
+  },
+  "coverageEvidence": {
+    "success": [
+      "✔ 真实 SDK：来源补取中取消必须报错，不能返回部分成功 (318.942448ms)",
+      "✔ 真实 SDK：分页补取来源标签进入同一结果，主搜引用和补充回退可同时确认 (146.606823ms)",
+      "✔ Grok success is recorded as served by grok (9.01125ms)",
+      "✔ 正常主搜的补充结果和混合回退均保留来源，不把补充结果当作主搜失败 (0.615157ms)",
+      "✔ unusable result URLs do not count as success or prevent the next source (1.217344ms)",
+      "✔ invalid URLs from every source fail explicitly instead of returning empty success (0.667083ms)",
+      "✔ sources removed by the output budget cannot stop fallback as an empty success (0.901875ms)"
+    ],
+    "fallback": [
+      "✔ 真实 SDK：fallback 响应与进程回收 (129.897188ms)",
+      "✔ 真实 SDK：内部 tavily 回退保留非枚举来源标签与脱敏归属 (149.351094ms)",
+      "✔ 真实 SDK：内部 exa 回退保留非枚举来源标签与脱敏归属 (124.858906ms)",
+      "✔ 真实 SDK：内部 tinyfish 回退保留非枚举来源标签与脱敏归属 (123.89724ms)",
+      "✔ 真实 SDK：内部 firecrawl 回退保留非枚举来源标签与脱敏归属 (121.364688ms)",
+      "✔ 真实 SDK：分页补取来源标签进入同一结果，主搜引用和补充回退可同时确认 (146.606823ms)",
+      "✔ output budget captured at dispatch rejects bad config instead of silent fallback (0.687188ms)",
+      "✔ grok-search-rs internal fallback is recorded as grok-sources with a stable reason only (0.647604ms)",
+      "✔ 内部回退采用结果携带的实际供应商，不读取配置顺序或额外搜索 (1.682552ms)",
+      "✔ 正常主搜的补充结果和混合回退均保留来源，不把补充结果当作主搜失败 (0.615157ms)",
+      "✔ an imported fallback_sources 0 sends no supplementary request and reports only the Grok failure (2.613594ms)",
+      "✔ sources-only mode with fallback_sources 0 sends no request and names the zero budget (0.686667ms)",
+      "✔ zero fallback budget keeps non-plugin primary errors secret-free (0.59349ms)",
+      "✔ a missing fallback_sources still requests five supplementary results in both fallback modes (6.401979ms)",
+      "✔ an unreaped Grok process is never hidden by supplementary fallback (1.032813ms)",
+      "✔ fallback results are capped by fallback_sources and keep provider metadata (0.480937ms)",
+      "✔ fallback_sources 0 sends no supplementary request; missing or invalid values still mean 5 (1.889843ms)",
+      "✔ fallback serializes within shared character budget without routing metadata consuming it (1.241719ms)",
+      "✔ sources removed by the output budget cannot stop fallback as an empty success (0.901875ms)"
+    ],
+    "allFailures": [
+      "✔ 默认一个运行、八个排队，超出容量明确失败 (9.554635ms)",
+      "✔ 回收失败保留故障槽位，直到实际退出才允许后续查询 (1.83125ms)",
+      "✔ 真实 SDK：程序启动失败不留下未知进程 (8.944844ms)",
+      "✔ 正常主搜的补充结果和混合回退均保留来源，不把补充结果当作主搜失败 (0.615157ms)",
+      "✔ an imported fallback_sources 0 sends no supplementary request and reports only the Grok failure (2.613594ms)"
+    ],
+    "timeout": [
+      "✔ 读取配置快照也受截止时间约束，停止不会无限等待快照 (62.517812ms)",
+      "✔ SDK 加载阶段也受统一工作截止时间约束 (32.398698ms)",
+      "✔ 真实 SDK：init-hang 总截止后回收 (215.441979ms)",
+      "✔ 真实 SDK：call-hang 总截止后回收 (216.232344ms)",
+      "✔ a single total budget ends Grok without giving sources another full timeout (62.312084ms)"
+    ],
+    "cancel": [
+      "✔ 排队取消保留调用方原因，未派发查询不启动程序 (0.942136ms)",
+      "✔ 停止先拒绝新查询，取消排队和运行并等待运行回收 (17.922812ms)",
+      "✔ 预先取消保留调用方原因且不加载 SDK (3.964323ms)",
+      "✔ 真实 SDK：查询中取消保留原因并等待进程退出 (312.539219ms)",
+      "✔ 真实 SDK：来源补取中取消必须报错，不能返回部分成功 (318.942448ms)",
+      "✔ caller cancellation cannot hide an unreaped process or release its faulted slot (0.613803ms)"
+    ]
+  },
+  "originalFilesVerifiedBeforeAndAfter": 1197,
+  "originalBusinessSourceModified": false,
+  "networkGuardProcesses": 5,
+  "networkAttemptsSeenByGuard": 0,
+  "mockScope": "Original suites use injected fetch and offline stdio fixtures. No real search request. Guard is application API interception, not OS-level network isolation.",
+  "remaining": [
+    "ordinary APK packaging and app-sandbox lifecycle/exec restrictions",
+    "real API budgeted search",
+    "target AI client integration",
+    "TLS/DNS outbound behavior of relocated runtime",
+    "complete redistribution notices"
+  ],
+  "firstFailure": {
+    "reason": "suite launcher omitted OPENSSL_CONF; Node exited13 before tests",
+    "correction": "new lab launcher sets explicit existing config path; original business code/tests unchanged"
+  },
+  "evidenceFiles": [
+    {
+      "path": "core-post-suite-stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "core-post-suite-verification.json",
+      "bytes": 281,
+      "sha256": "6d504451b07727af30c047b261ebac483c60cbf58b1da635f0c1c8f0eda9f764"
+    },
+    {
+      "path": "core-verification-exit.txt",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "core-verification.json",
+      "bytes": 281,
+      "sha256": "6d504451b07727af30c047b261ebac483c60cbf58b1da635f0c1c8f0eda9f764"
+    },
+    {
+      "path": "device.txt",
+      "bytes": 427,
+      "sha256": "16207926f31a07e31ae37da9727ee860585fe7420388b0972f7a46d3b6565044"
+    },
+    {
+      "path": "original-probe-stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "original-probe.json",
+      "bytes": 471,
+      "sha256": "e5d4f52ea41548f6581932524cff1758179af98dfedad1b62b19f8ba72ec59e6"
+    },
+    {
+      "path": "probe-exit.txt",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "runtime-exit.txt",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "runtime-result.json",
+      "bytes": 544,
+      "sha256": "22ab4ce2abcabd27f9b9c20b173793a5818d5c8c4514fc422fb1210b601d2ccd"
+    },
+    {
+      "path": "runtime-stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "suite/exit-code.txt",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "suite/network-guard-16078.json",
+      "bytes": 86,
+      "sha256": "327775b2d4eac1e0894919e9b5a219ecf208636b864ae18da0365274d55e25f4"
+    },
+    {
+      "path": "suite/network-guard-16085.json",
+      "bytes": 86,
+      "sha256": "327775b2d4eac1e0894919e9b5a219ecf208636b864ae18da0365274d55e25f4"
+    },
+    {
+      "path": "suite/network-guard-16431.json",
+      "bytes": 86,
+      "sha256": "327775b2d4eac1e0894919e9b5a219ecf208636b864ae18da0365274d55e25f4"
+    },
+    {
+      "path": "suite/network-guard-16439.json",
+      "bytes": 86,
+      "sha256": "327775b2d4eac1e0894919e9b5a219ecf208636b864ae18da0365274d55e25f4"
+    },
+    {
+      "path": "suite/network-guard-16466.json",
+      "bytes": 86,
+      "sha256": "327775b2d4eac1e0894919e9b5a219ecf208636b864ae18da0365274d55e25f4"
+    },
+    {
+      "path": "suite/test.log",
+      "bytes": 9680,
+      "sha256": "62fb3b16ad27f2f2377b0b96afd32c16701925ffe4be8384e0110fa7ca57434d"
+    }
+  ],
+  "scenarioEvidence": {
+    "mainSuccess": {
+      "status": "passed_mock",
+      "logLine": "✔ Grok success is recorded as served by grok (9.01125ms)"
+    },
+    "fallbackSuccess": {
+      "status": "passed_mock",
+      "logLine": "✔ a failed Grok falls back to the shared source chain and records the primary code (0.417812ms)"
+    },
+    "allSourcesFail": {
+      "status": "passed_mock",
+      "logLine": "✔ when every source fails the error keeps grok first and the route lists only the sources (0.664427ms)"
+    },
+    "timeout": {
+      "status": "passed_mock",
+      "logLine": "✔ a single total budget ends Grok without giving sources another full timeout (62.312084ms)"
+    },
+    "cancel": {
+      "status": "passed_mock",
+      "logLine": "✔ an aborted search is not recorded and does not fall back (0.505104ms)"
+    }
+  }
+}

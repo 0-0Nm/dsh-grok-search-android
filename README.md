@@ -15,8 +15,8 @@ Pinned plugin reference: `df34daebaf3ea28e1da764f5257a8084c1944b21`. Pinned back
 | Android backend compilation | Passed — Actions run #5; AArch64 / Android linker |
 | Backend launch on an Android device | Passed in Android 16 Shizuku shell (not APK sandbox) |
 | MCP handshake and tools discovery | Passed locally over stdio; 5 tools discovered |
-| Original plugin orchestration under an Android adapter | Not run |
-| Mock success/fallback/failure/timeout/cancellation | Not run |
+| Original plugin orchestration under an Android adapter | Original core mock execution passed in Android/bionic shell; APK host not yet tested |
+| Mock success/fallback/failure/timeout/cancellation | Passed in selected unchanged upstream suites on Android/bionic Node24.22.2 |
 | Real search with an approved request budget | Not run |
 | Target Android AI client integration | Not run |
 | Ordinary distributable APK | Not run |
@@ -30,3 +30,9 @@ Artifacts retain build logs, version-only diff, lock/provenance records, executi
 ## Recorded results
 
 See [verification evidence and limits](docs/VERIFICATION.md), [local MCP smoke script](tests/android-mcp-smoke.sh), and [UI reference notes](docs/UI_REFERENCE.md). A working backend is not a completed Android adaptation of the original plugin. The original ESM orchestration, Android host adapter, approved real search, target AI client and ordinary APK distribution remain unverified.
+
+## Android original-core milestone
+
+The original plugin MCP module now handshakes with the original Rust backend on the actual Android phone. Five unchanged upstream test files pass **113/113 on Android/bionic Node24.22.2** (not the earlier Alpine/musl baseline). Original core payload hashes match before and after execution. This is a Shizuku shell experiment using a signed-repository Node runtime payload; no Termux App or APK was installed.
+
+See [Android original-core results](docs/C4-ANDROID-RESULTS.md) and [machine-readable evidence](docs/evidence/original-core-android-turn12.json). Real searches, target-client integration and ordinary APK packaging/execution remain unverified. The earlier Node22 source-build run timed out after 65 minutes; it did not produce the runtime used here.
