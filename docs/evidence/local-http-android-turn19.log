@@ -1,0 +1,17 @@
+✔ binds loopback only; initialization and single original-search tool discovery (50.251094ms)
+✔ authentication, Origin and Host checked; no secret is echoed (17.573333ms)
+✔ GET unsupported, media negotiation, malformed input and unsupported version rejected (15.536563ms)
+✔ real search disabled by default and never reaches adapter (3.22802ms)
+✔ unknown tool, invalid query and extra arguments fail before search (7.108281ms)
+✔ bridge forwards request/signal and preserves source result without redesigning routing (2.429427ms)
+✔ cancellation notification aborts pending adapter and releases slot (4.581875ms)
+✔ bounded timeout aborts pending adapter without retry (62.587812ms)
+✔ adapter error messages never expose upstream secret text (4.062917ms)
+ℹ tests 9
+ℹ suites 0
+ℹ pass 9
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 419.277709

@@ -1,0 +1,19 @@
+{
+  "platform": "android",
+  "node": "v24.22.2",
+  "clientSDK": "@modelcontextprotocol/client2.4.0",
+  "transport": "StreamableHTTP",
+  "initialize": "passed",
+  "toolsDiscovery": "passed",
+  "tools": [
+    "web_search"
+  ],
+  "searchDisabled": "passed",
+  "originalSearchInvocations": 0,
+  "originalFactoryAssembly": "passed",
+  "serverAddress": "127.0.0.1",
+  "tokenLogged": false,
+  "realSearch": "not_run",
+  "L3HubInstalledClient": "not_run",
+  "AppUIDHTTPIntegration": "not_run"
+}
